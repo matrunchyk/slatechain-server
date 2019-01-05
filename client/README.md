@@ -1,4 +1,4 @@
-# slatechain-client
+# JsCoin Wallet Application
 
 ## Project setup
 ```

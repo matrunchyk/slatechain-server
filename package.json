@@ -1,10 +1,10 @@
 {
-  "name": "slatechain-server",
+  "name": "jscoin-wallet",
   "version": "0.1.1",
-  "description": "Slate Chain crypto-currency server",
+  "description": "JsCoin crypto-currency server",
   "repository": {
     "type": "git",
-    "url": "https://github.com/matrunchyk/slatechain-server"
+    "url": "https://github.com/matrunchyk/jscoin-wallet"
   },
   "author": "Serhii Matrunchyk",
   "license": "MIT",

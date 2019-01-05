@@ -50,7 +50,7 @@ export default class AuthController {
     const msg: EmailMessage = {
       to: req.body.email,
       from: process.env.SENDGRID_FROM_ADDRESS,
-      subject: "Welcome to Slate Chain",
+      subject: "Welcome to JsCoin",
       text: `Hello,\n\nWe are happy to have you on board!.\n`
     };
     try {

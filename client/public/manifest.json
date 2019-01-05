@@ -1,6 +1,6 @@
 {
-  "name": "slatechain-client",
-  "short_name": "slatechain-client",
+  "name": "jscoin-wallet-client",
+  "short_name": "jscoin-wallet-client",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
