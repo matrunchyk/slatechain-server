@@ -1,4 +1,5 @@
 import Vue, { VNode } from 'vue';
+import 'vuetify/types';
 
 declare global {
   namespace JSX {

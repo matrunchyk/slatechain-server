@@ -22,7 +22,7 @@ export default class AccountController {
     let user: UserModel;
 
     try {
-      user = await User.findById(req.user.id);
+      user = await User.findById(req.session.user.id);
     } catch (e) {
       return next(e);
     }
@@ -70,7 +70,7 @@ export default class AccountController {
     let user: UserModel;
 
     try {
-      user = await User.findById(req.user.id);
+      user = await User.findById(req.session.user.id);
     } catch (e) {
       return next(e);
     }
@@ -96,7 +96,7 @@ export default class AccountController {
    */
   static async postDeleteAccount(req: Request, res: Response, next: NextFunction) {
     try {
-      await User.remove({_id: req.user.id});
+      await User.remove({_id: req.session.user.id});
     } catch (e) {
       return next(e);
     }
