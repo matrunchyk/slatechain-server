@@ -8,6 +8,9 @@
         <v-card dark class="yellow darken-3 border-radius-1 pt-4 pl-4 pb-4 no-elevation">
           <coin-card/>
         </v-card>
+        <v-card dark class="white black--text border-radius-1 pt-4 pl-4 pb-4 no-elevation">
+          <coin-graph/>
+        </v-card>
       </v-flex>
       <v-flex xs6>
         <v-card class="white no-elevation">
@@ -25,6 +28,7 @@ import { Component, Vue } from 'vue-property-decorator';
   components: {
     CoinCard: () => import(/* webpackChunkName: "coin-card" */ '@/components/CoinCard.vue'),
     CoinTransactions: () => import(/* webpackChunkName: "coin-transactions" */ '@/components/CoinTransactions.vue'),
+    CoinGraph: () => import(/* webpackChunkName: "coin-graph" */ '@/components/CoinGraph.vue'),
   },
 })
 export default class AppWallet extends Vue {}

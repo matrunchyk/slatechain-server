@@ -21,8 +21,8 @@
             <div :class="{
               'deep-orange--text': props.item.jsc_amount < 0,
               'green--text': props.item.jsc_amount > 0,
-            }">{{ props.item.jsc_amount }} JSC</div>
-            <div class="grey--text text--lighten-1">{{ props.item.$_amount }} USD</div>
+            }">{{ props.item.jsc_amount.toFixed(2) }} JSC</div>
+            <div class="grey--text text--lighten-1">{{ props.item.$_amount.toFixed(2) }} USD</div>
           </td>
         </tr>
       </template>
@@ -37,8 +37,10 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue} from 'vue-property-decorator';
-import {CURRENT_RATE, TRANSACTION_STATUS, TRANSACTION_STATUS_MAPS} from "@/constants";
+import Vue from 'vue';
+import {Component} from 'vue-property-decorator';
+import {CURRENT_RATE, TRANSACTION_STATUS_MAPS} from '@/constants';
+import {TransactionData} from '@/index';
 
 const regDateOptions = {
   month: 'long',
@@ -61,9 +63,11 @@ const regTimeOptions = {
   },
 })
 export default class CoinTransactions extends Vue {
-  protected transactions = [];
+  protected transactions: TransactionData[] = [];
 
-  mounted() {
+  private mounted() {
+    // @ts-ignore
+    // noinspection TypeScriptUnresolvedVariable
     const dateOptions = this.shortDate ? regDateOptions : Object.assign({}, regDateOptions, regTimeOptions);
 
     for (let i = 0; i < 200; i++) {
@@ -72,13 +76,13 @@ export default class CoinTransactions extends Vue {
       const op = Math.random() > 0.5 ? -1 : 1;
       const amount = (Math.floor(Math.random() * 10) * op);
 
-      const trn = {
+      const trn: TransactionData = {
         _id: i,
         date: new Intl.DateTimeFormat('en-US', dateOptions).format(date),
         status,
         description: `${TRANSACTION_STATUS_MAPS[status]} to 3Bhe5sbhSTNxcDpYyy..`,
-        jsc_amount: amount.toFixed(2),
-        $_amount: (amount * CURRENT_RATE).toFixed(2),
+        jsc_amount: amount,
+        $_amount: amount * CURRENT_RATE,
       };
       this.transactions.push(trn);
     }

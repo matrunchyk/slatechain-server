@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import {CURRENT_RATE} from "@/constants";
+import {CURRENT_RATE} from '@/constants';
 
 @Component({
   components: {
@@ -40,7 +40,7 @@ import {CURRENT_RATE} from "@/constants";
   },
 })
 export default class CoinCard extends Vue {
-  CURRENT_RATE = CURRENT_RATE;
+  protected CURRENT_RATE = CURRENT_RATE;
 }
 </script>
 
