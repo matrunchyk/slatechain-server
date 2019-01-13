@@ -1,8 +1,7 @@
-import crypto from "crypto";
-import { default as User, UserModel, AuthToken } from "../models/User";
-import { Request, Response, NextFunction } from "express";
-import "express-validator";
-import { sendEmail, EmailMessage } from "../lib/mailer";
+import crypto from 'crypto';
+import { default as User, UserModel, AuthToken } from '../models/User';
+import { Request, Response, NextFunction } from 'express';
+import { sendEmail, EmailMessage } from '../lib/mailer';
 
 export default class AccountController {
   /**
@@ -10,14 +9,14 @@ export default class AccountController {
    * Update profile information.
    */
   static async postUpdateProfile(req: Request, res: Response, next: NextFunction) {
-    req.assert("email", "Please enter a valid email address.").isEmail();
-    req.sanitize("email").normalizeEmail({gmail_remove_dots: false});
+    // req.assert('email', 'Please enter a valid email address.').isEmail();
+    // req.sanitize('email').normalizeEmail({gmail_remove_dots: false});
 
-    const errors = req.validationErrors();
+    // const errors = req.validationErrors();
 
-    if (errors) {
-      return res.status(422).json(errors);
-    }
+    // if (errors) {
+    //  return res.status(422).json(errors);
+    // }
 
     let user: UserModel;
 
@@ -27,28 +26,27 @@ export default class AccountController {
       return next(e);
     }
 
-    user.email = req.body.email || "";
-    user.profile.name = req.body.name || "";
-    user.profile.gender = req.body.gender || "";
-    user.profile.location = req.body.location || "";
-    user.profile.website = req.body.website || "";
+    user.email = req.body.email || '';
+    user.profile.name = req.body.name || '';
+    user.profile.location = req.body.location || '';
+    user.profile.website = req.body.website || '';
 
     try {
       await user.save();
     } catch (e) {
       if (e.code === 11000) {
         return res.status(422).json({
-          message: "The email address you have entered is already associated with an account."
+          message: 'The email address you have entered is already associated with an account.'
         });
       }
 
       return res.status(500).json({
-        message: "Unable to save a profile."
+        message: 'Unable to save a profile.'
       });
     }
 
     return res.json({
-      message: "Profile information has been updated."
+      message: 'Profile information has been updated.'
     });
   }
 
@@ -58,14 +56,14 @@ export default class AccountController {
    */
   static async postUpdatePassword(req: Request, res: Response, next: NextFunction) {
     // noinspection TypeScriptValidateJSTypes
-    req.assert("password", "Password must be at least 8 characters long").len({min: 8});
-    req.assert("confirmPassword", "Passwords do not match").equals(req.body.password);
+    // req.assert('password', 'Password must be at least 8 characters long').len({min: 8});
+    // req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
 
-    const errors = req.validationErrors();
+    // const errors = req.validationErrors();
 
-    if (errors) {
-      return res.status(422).json(errors);
-    }
+    // if (errors) {
+    //  return res.status(422).json(errors);
+    // }
 
     let user: UserModel;
 
@@ -82,11 +80,11 @@ export default class AccountController {
     } catch (e) {
 
       return res.status(500).json({
-        message: "Unable to save a profile."
+        message: 'Unable to save a profile.'
       });
     }
     return res.json({
-      message: "Password has been changed."
+      message: 'Password has been changed.'
     });
   }
 
@@ -102,7 +100,7 @@ export default class AccountController {
     }
 
     return res.json({
-      message: "Your account has been deleted."
+      message: 'Your account has been deleted.'
     });
   }
 
@@ -111,21 +109,21 @@ export default class AccountController {
    * Create a random token, then the send user an email with a reset link.
    */
   static async postForgot(req: Request, res: Response, next: NextFunction) {
-    req.assert("email", "Please enter a valid email address.").isEmail();
-    req.sanitize("email").normalizeEmail({gmail_remove_dots: false});
+    // req.assert('email', 'Please enter a valid email address.').isEmail();
+    // req.sanitize('email').normalizeEmail({gmail_remove_dots: false});
 
-    const errors = req.validationErrors();
+    // const errors = req.validationErrors();
 
-    if (errors) {
-      return res.status(422).json(errors);
-    }
+    // if (errors) {
+    //  return res.status(422).json(errors);
+    // }
 
     let user: UserModel;
     let token: string;
 
     try {
       const tokenBuf = await crypto.randomBytes(16);
-      token = tokenBuf.toString("hex");
+      token = tokenBuf.toString('hex');
     } catch (e) {
       return next(e);
     }
@@ -138,7 +136,7 @@ export default class AccountController {
 
     if (!user) {
       return res.status(422).json({
-        msg: "Account with the credentials you have provided not exists.",
+        msg: 'Account with the credentials you have provided not exists.',
       });
     }
 
@@ -154,7 +152,7 @@ export default class AccountController {
     const msg: EmailMessage = {
       to: user.email,
       from: process.env.SENDGRID_FROM_ADDRESS,
-      subject: "Reset your password",
+      subject: 'Reset your password',
       text: `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n
         Please click on the following link, or paste this into your browser to complete the process:\n\n
         http://${req.headers.host}/reset/${token}\n\n
@@ -168,7 +166,7 @@ export default class AccountController {
     }
 
     return res.json({
-      message: "Please see you email for password recovery link."
+      message: 'Please see you email for password recovery link.'
     });
   }
 
@@ -179,7 +177,7 @@ export default class AccountController {
   static async getReset(req: Request, res: Response, next: NextFunction) {
     if (req.session.user) {
       return res.status(400).json({
-        message: "Are sure you want to reset password? You are already logged in."
+        message: 'Are sure you want to reset password? You are already logged in.'
       });
     }
 
@@ -188,12 +186,12 @@ export default class AccountController {
     try {
       user = await User
         .findOne({passwordResetToken: req.params.token})
-        .where("passwordResetExpires").gt(Date.now())
+        .where('passwordResetExpires').gt(Date.now())
         .exec();
 
       if (!user) {
         return res.status(422).json({
-          msg: "Reset token is invalid.",
+          msg: 'Reset token is invalid.',
         });
       }
     } catch (e) {
@@ -201,7 +199,7 @@ export default class AccountController {
     }
 
     return res.json({
-      message: "Success"
+      message: 'Success'
     });
   }
 
@@ -211,26 +209,26 @@ export default class AccountController {
    */
   static async postReset(req: Request, res: Response, next: NextFunction) {
     // noinspection TypeScriptValidateJSTypes
-    req.assert("password", "Password must be at least 4 characters long.").len({min: 4});
-    req.assert("confirm", "Passwords must match.").equals(req.body.password);
+    // req.assert('password', 'Password must be at least 4 characters long.').len({min: 4});
+    // req.assert('confirm', 'Passwords must match.').equals(req.body.password);
 
-    const errors = req.validationErrors();
+    // const errors = req.validationErrors();
 
-    if (errors) {
-      return res.status(422).json(errors);
-    }
+    // if (errors) {
+    //  return res.status(422).json(errors);
+    // }
 
     let user: UserModel;
 
     try {
       user = await User
         .findOne({passwordResetToken: req.params.token})
-        .where("passwordResetExpires").gt(Date.now())
+        .where('passwordResetExpires').gt(Date.now())
         .exec();
 
       if (!user) {
         return res.status(422).json({
-          msg: "Reset token is invalid.",
+          msg: 'Reset token is invalid.',
         });
       }
     } catch (e) {
@@ -250,7 +248,7 @@ export default class AccountController {
     const msg: EmailMessage = {
       to: user.email,
       from: process.env.SENDGRID_FROM_ADDRESS,
-      subject: "Your password has been changed",
+      subject: 'Your password has been changed',
       text: `Hello,\n\nThis is a confirmation that the password for your account ${user.email} has just been changed.\n`
     };
 
@@ -261,7 +259,7 @@ export default class AccountController {
     }
 
     return res.json({
-      message: "Success! Your password has been changed."
+      message: 'Success! Your password has been changed.'
     });
   }
 }

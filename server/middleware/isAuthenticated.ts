@@ -1,17 +1,17 @@
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 
-import { default as User } from "../models/User";
-import { Request, Response, NextFunction } from "express";
-import { JWT_PRIVATE_KEY } from "../lib/secrets";
-import { JWTPayload } from "../../index";
+import { default as User } from '../models/User';
+import { Request, Response, NextFunction } from 'express';
+import { JWT_PRIVATE_KEY } from '../lib/secrets';
+import { JWTPayload } from '../../index';
 
 export default async function isAuthenticated (req: Request, res: Response, next: NextFunction) {
-  const token = req.headers["x-access-token"];
+  const token = req.headers['x-access-token'];
 
   if (!token) {
     return res.status(401).send({
       auth: false,
-      message: "No token provided.",
+      message: 'No token provided.',
     });
   }
   let payload: JWTPayload;
@@ -23,14 +23,14 @@ export default async function isAuthenticated (req: Request, res: Response, next
 
     return res.status(401).send({
       auth: false,
-      message: "Failed to authenticate token.",
+      message: 'Failed to authenticate token.',
     });
   }
 
   const hiddenUserAttributes = [
-    "-password",
-    "-__v",
-    "-tokens",
+    '-password',
+    '-__v',
+    '-tokens',
   ];
 
   try {
@@ -43,7 +43,7 @@ export default async function isAuthenticated (req: Request, res: Response, next
     }
 
     return res.status(404).send({
-      message: "No user found.",
+      message: 'No user found.',
     });
 
   } catch (e) {
@@ -51,7 +51,7 @@ export default async function isAuthenticated (req: Request, res: Response, next
     console.log(e.name);
 
     return res.status(500).send({
-      message: "There was a problem finding the user.",
+      message: 'There was a problem finding the user.',
     });
   }
 }

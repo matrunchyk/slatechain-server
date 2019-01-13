@@ -10,7 +10,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import Chart from 'chart.js';
 import {stubChartData} from '@/plugins/stubChartData';
 
-@Component({})
+@Component
 export default class CoinGraph extends Vue {
   protected chart: Chart|object = {};
 

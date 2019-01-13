@@ -1,7 +1,8 @@
 <template>
-  <div id="app">
+  <div id="app" :class="{ authenticated }">
     <v-app id="jscoin">
       <v-navigation-drawer
+        v-if="authenticated"
         :width="220"
         v-model="drawer"
         fixed
@@ -33,7 +34,7 @@
         </v-list>
       </v-navigation-drawer>
 
-      <v-toolbar dark fixed app class="elevation-0 toolbar-main">
+      <v-toolbar v-if="authenticated" dark fixed app class="elevation-0 toolbar-main">
         <v-toolbar-title class="ml-0 pl-3">
           <v-toolbar-side-icon @click.stop="drawer = !drawer"/>
         </v-toolbar-title>
@@ -41,14 +42,33 @@
         <v-btn icon>
           <v-icon>notifications</v-icon>
         </v-btn>
-        <v-btn icon large>
-          <v-avatar size="32px" tile>
-            <img src="http://demo.artureanec.com/html/crypterium/wallet/img/user.png"
-                 alt="John Doe"
+        <v-btn icon large @click="doShowMenu">
+          <v-avatar size="32px">
+            <img :src="user.gravatar"
+                 :alt="user.profile.name"
             >
           </v-avatar>
         </v-btn>
-        <span>John Die</span>
+        <span @click="doShowMenu">{{ user.profile.name }}</span>
+        <v-menu
+          v-model="showMenu"
+          :position-x="menuX"
+          :position-y="menuY"
+          absolute
+          offset-y
+        >
+          <v-list dense>
+            <v-list-tile @click="">
+              <v-list-tile-title>Support</v-list-tile-title>
+            </v-list-tile>
+            <v-list-tile @click="">
+              <v-list-tile-title>Settings</v-list-tile-title>
+            </v-list-tile>
+            <v-list-tile @click="logOut">
+              <v-list-tile-title>Log out</v-list-tile-title>
+            </v-list-tile>
+          </v-list>
+        </v-menu>
       </v-toolbar>
 
       <v-content>
@@ -62,6 +82,9 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { Getter } from 'vuex-class';
+import { UserModel } from '../../server/models/User';
+import { logOut } from '@/lib/utils';
 
 @Component({
   components: {
@@ -69,6 +92,12 @@ import { Component, Vue } from 'vue-property-decorator';
   },
 })
 export default class App extends Vue {
+  @Getter protected authenticated!: boolean;
+  @Getter protected user!: UserModel;
+
+  protected menuX = 0;
+  protected menuY = 0;
+  protected showMenu = false;
   protected dialog = false;
   protected drawer = null;
   protected items = [
@@ -78,6 +107,16 @@ export default class App extends Vue {
     { icon: 'settings', text: 'Settings', href: { name: 'settings' } },
     { icon: 'chat_bubble', text: 'Support', href: { name: 'support' } },
   ];
+
+  protected doShowMenu(event: MouseEvent) {
+    this.menuX = event.x - 25;
+    this.menuY = event.y + 15;
+    this.showMenu = true;
+  }
+
+  protected logOut() {
+    logOut();
+  }
 }
 </script>
 
@@ -114,6 +153,7 @@ export default class App extends Vue {
       .v-icon
         color #fff
 
-  main.v-content
-    padding-top 90px !important
+  .authenticated
+    main.v-content
+      padding-top 90px !important
 </style>

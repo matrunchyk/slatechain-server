@@ -10,22 +10,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Prop } from 'vue-property-decorator';
 
-@Component({
-  props: {
-    fill: {
-      type: String,
-      required: false,
-      default: () => '#364699',
-    },
-    size: {
-      type: Number,
-      required: false,
-      default: () => 48,
-    },
-  },
-})
+@Component
 export default class CoinLogo extends Vue {
+  @Prop({ default: '#364699' }) fill!: string;
+  @Prop({ default: 48 }) size!: string;
 }
 </script>

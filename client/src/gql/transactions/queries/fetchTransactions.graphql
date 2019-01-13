@@ -1,0 +1,25 @@
+query fetchTransactions {
+  fetchTransactions {
+    _id
+    date
+    direction
+    recipient {
+      _id
+      profile {
+        name
+        location
+        picture
+      }
+    }
+    sender {
+      _id
+      profile {
+        name
+        location
+        picture
+      }
+    }
+    amount
+    dollar_amount
+  }
+}

@@ -3,89 +3,91 @@
     <div class="title ma-4">JsCoin wallet transactions</div>
     <v-data-table
       hide-headers
+      :headers-length="3"
       :items="transactions"
       item-key="_id"
+      :pagination.sync="defaultPagination"
     >
       <template slot="items"
                 slot-scope="props">
-        <tr @click="props.expanded = !props.expanded">
-          <td class="text-xs-right grey--text text--lighten-1 font-weight-bold">{{ props.item.date }}</td>
+        <tr @click="toggleTransaction(props)">
+          <td class="text-xs-right grey--text text--lighten-1 font-weight-bold">
+            {{ brief ? props.item.shortDate : props.item.longDate  }}
+          </td>
           <td class="text-xs-left">
-            <v-icon class="amber--text" v-if="props.item.status === 0">remove_circle_outline</v-icon>
-            <v-icon class="circle-icon light-blue--text" v-if="props.item.status === 1">keyboard_arrow_right</v-icon>
-            <v-icon class="circle-icon green--text" v-if="props.item.status === 2">keyboard_arrow_left</v-icon>
-            <v-icon class="deep-orange--text" v-if="props.item.status === 3">highlight_off</v-icon>
-            {{ props.item.description }}
+            <!--<v-icon class="amber&#45;&#45;text"-->
+                    <!--v-if="props.item.status === 0">remove_circle_outline-->
+            <!--</v-icon>-->
+            <v-icon class="circle-icon green--text"
+                    v-if="props.item.isIncoming">keyboard_arrow_left
+            </v-icon>
+            <v-icon class="circle-icon light-blue--text"
+                    v-else>keyboard_arrow_right
+            </v-icon>
+            <!--<v-icon class="deep-orange&#45;&#45;text"-->
+                    <!--v-if="props.item.status === 3">highlight_off-->
+            <!--</v-icon>-->
+            {{ props.item.verbText }} {{ props.item.recipient._id }}
           </td>
           <td class="text-xs-right">
             <div :class="{
-              'deep-orange--text': props.item.jsc_amount < 0,
-              'green--text': props.item.jsc_amount > 0,
-            }">{{ props.item.jsc_amount.toFixed(2) }} JSC</div>
-            <div class="grey--text text--lighten-1">{{ props.item.$_amount.toFixed(2) }} USD</div>
+              'deep-orange--text': props.item.isOutgoing,
+              'green--text': props.item.isIncoming,
+            }">
+              <span v-if="props.item.isOutgoing">-</span>
+              {{ props.item.amount.toFixed(2) }} JSC
+            </div>
+            <div class="grey--text text--lighten-1">{{ props.item.dollar_amount.toFixed(2) }} USD</div>
           </td>
         </tr>
       </template>
       <template slot="expand"
                 slot-scope="props">
-        <v-card flat>
-          <v-card-text>Peek-a-boo!</v-card-text>
-        </v-card>
+        <div class="transaction-details"
+             v-if="selectedTransaction">
+          <div class="font-weight-bold">Date:</div>
+          <div>{{ selectedTransaction.date }}</div>
+          <div class="font-weight-bold">Sender name:</div>
+          <div>{{ selectedTransaction.sender.profile.name }}</div>
+          <div class="font-weight-bold">Sender address:</div>
+          <div>{{ selectedTransaction.sender.profile.location }}</div>
+          <div class="font-weight-bold">Direction:</div>
+          <div>{{ selectedTransaction.direction }}</div>
+        </div>
       </template>
     </v-data-table>
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import {Component} from 'vue-property-decorator';
-import {CURRENT_RATE, TRANSACTION_STATUS_MAPS} from '@/constants';
-import {TransactionData} from '@/index';
+import { Vue, Component, Prop } from 'vue-property-decorator';
+import { ICollection, ITransaction, IVDatatableProps } from '@/index';
+import Transaction from '@/models/Transaction';
 
-const regDateOptions = {
-  month: 'long',
-  day: 'numeric',
-  year: 'numeric',
-};
-const regTimeOptions = {
-  hour: 'numeric',
-  minute: '2-digit',
-  hour12: true,
-};
-
-@Component({
-  props: {
-    shortDate: {
-      type: Boolean,
-      required: false,
-      default: () => false,
-    },
-  },
-})
+@Component
 export default class CoinTransactions extends Vue {
-  protected transactions: TransactionData[] = [];
+  @Prop({default: false}) protected brief: boolean;
 
-  private mounted() {
-    // @ts-ignore
-    // noinspection TypeScriptUnresolvedVariable
-    const dateOptions = this.shortDate ? regDateOptions : Object.assign({}, regDateOptions, regTimeOptions);
+  protected model: Transaction = new Transaction();
+  protected transactions: ITransaction[] = [];
 
-    for (let i = 0; i < 200; i++) {
-      const date = new Date();
-      const status = Math.floor(Math.random() * 4);
-      const op = Math.random() > 0.5 ? -1 : 1;
-      const amount = (Math.floor(Math.random() * 10) * op);
+  protected defaultPagination = {
+    descending: false,
+    page: 1,
+    rowsPerPage: 10,
+    sortBy: null,
+    totalItems: 0,
+  };
 
-      const trn: TransactionData = {
-        _id: i,
-        date: new Intl.DateTimeFormat('en-US', dateOptions).format(date),
-        status,
-        description: `${TRANSACTION_STATUS_MAPS[status]} to 3Bhe5sbhSTNxcDpYyy..`,
-        jsc_amount: amount,
-        $_amount: amount * CURRENT_RATE,
-      };
-      this.transactions.push(trn);
-    }
+  protected selectedTransaction: Transaction = Transaction.empty();
+
+  protected toggleTransaction(props: IVDatatableProps): void {
+    props.expanded = !props.expanded;
+    this.selectedTransaction = props.item;
+  }
+
+  async mounted() {
+    this.transactions = (await this.model.get() as ICollection).all();
   }
 }
 </script>
@@ -97,4 +99,9 @@ export default class CoinTransactions extends Vue {
     margin-right 3px
     font-size 16px
     margin-left 1px
+
+  .transaction-details
+    display grid
+    grid-template-columns 110px 200px
+    margin 20px 0 20px 80px
 </style>
