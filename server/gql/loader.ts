@@ -41,24 +41,28 @@ fs.readdirSync(normalizedPath.join(__dirname, 'schema'))
 
 
 // Directives
-fs.readdirSync(normalizedPath.join(__dirname, 'directives'))
-  .forEach((file: string) => {
+const directivesDir = normalizedPath.join(__dirname, 'directives');
 
-  if (/.*\.js$/.test(file) && file !== 'index.js') {
-    const mdl = require(`./directives/${file}`);
+if (fs.existsSync(directivesDir)) {
+  fs.readdirSync(directivesDir)
+    .forEach((file: string) => {
 
-    const normalizedFile = file.replace(/\.js$/, '');
-    const className = `${pascalCase(normalizedFile)}Directive`;
+      if (/.*\.js$/.test(file) && file !== 'index.js') {
+        const mdl = require(`./directives/${file}`);
 
-    if (mdl[className]) {
-      merge(schemaDirectives, {
-        [normalizedFile]: mdl[className],
-      });
-    }
+        const normalizedFile = file.replace(/\.js$/, '');
+        const className = `${pascalCase(normalizedFile)}Directive`;
 
-    if (mdl.typeDef) {
-      typeDefs.push(mdl.typeDef);
-    }
-  }
-});
+        if (mdl[className]) {
+          merge(schemaDirectives, {
+            [normalizedFile]: mdl[className],
+          });
+        }
+
+        if (mdl.typeDef) {
+          typeDefs.push(mdl.typeDef);
+        }
+      }
+    });
+}
 

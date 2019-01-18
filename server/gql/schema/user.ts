@@ -1,5 +1,4 @@
 import { IResolverObject } from 'graphql-tools';
-import AuthController from '../../controllers/AuthController';
 
 export const typeDef = `
   type UserProfile {
@@ -32,6 +31,6 @@ export const typeDef = `
 
 export const resolvers: IResolverObject = {
   Mutation: {
-     login: AuthController.postLogin,
+     login: () => {},
   },
 };

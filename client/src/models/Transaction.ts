@@ -50,6 +50,7 @@ export default class Transaction extends BaseModel {
       Object.assign(regDateOptions, regTimeOptions)
     ).format(this.date);
   }
+
   get shortDate() {
     return new Intl.DateTimeFormat(
       'en-US',

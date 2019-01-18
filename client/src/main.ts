@@ -18,7 +18,7 @@ Vue.use(VueGraphqlModels, {
     return import(/* webpackChunkName: "data/[request]" */ `@/data/${path}`);
   },
   modelLoader(path: string) {
-    return import(/* webpackChunkName: "models/[request]" */ `@/models/${path}`);
+    return import(/* webpackChunkName: "lib/[request]" */ `@/models/${path}`);
   },
   gqlLoader(path: string) {
     return import(/* webpackChunkName: "gql/[request]" */ `@/gql/${path}.graphql`);

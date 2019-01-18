@@ -7,11 +7,6 @@ export const typeDef = `
     OUTGOING
   }
 
-  type SeededData {
-    transactions: Int!
-    users: Int!
-  }
-
   type Transaction {
     _id: ID!
     date: String!
@@ -25,19 +20,12 @@ export const typeDef = `
   }
 
   extend type Query {
-    fetchTransactions: [Transaction!]! @auth
-  }
-
-  extend type Mutation {
-    seedDatabase: SeededData
+    fetchTransactions: [Transaction!]!
   }
 `;
 
 export const resolvers: IResolverObject = {
   Query: {
     fetchTransactions: WalletController.fetchTransactions,
-  },
-  Mutation: {
-    seedDatabase: WalletController.seedDatabase,
   },
 };

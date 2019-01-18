@@ -2,7 +2,7 @@ import { RawLocation } from 'vue-router';
 import { Vue } from 'vue/types/vue';
 import { Collection } from 'collect.js';
 import Transaction from '@/models/Transaction';
-import { UserModel } from '../../server/models/User';
+import { UserModel } from '../../server/lib/User';
 
 export interface IUserData {
   name: string;

@@ -1,5 +1,4 @@
 import { IResolverObject } from 'graphql-tools';
-// import AuthController from '../../controllers/AuthController';
 
 export const typeDef = `
   type Block {

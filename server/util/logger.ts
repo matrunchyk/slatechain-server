@@ -1,6 +1,6 @@
 import winston from 'winston';
 import { Logger } from 'winston';
-import './secrets';
+import './config';
 
 const logger = new (Logger)({
     transports: [

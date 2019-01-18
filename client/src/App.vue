@@ -83,7 +83,6 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { Getter } from 'vuex-class';
-import { UserModel } from '../../server/models/User';
 import { logOut } from '@/lib/utils';
 
 @Component({
@@ -93,7 +92,7 @@ import { logOut } from '@/lib/utils';
 })
 export default class App extends Vue {
   @Getter protected authenticated!: boolean;
-  @Getter protected user!: UserModel;
+  @Getter protected user!;
 
   protected menuX = 0;
   protected menuY = 0;
