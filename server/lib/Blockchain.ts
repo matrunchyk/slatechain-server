@@ -5,13 +5,36 @@ import Block from './Block';
 import Transaction from './Transaction';
 
 export default class Blockchain extends AbstractModel {
-  private state: State;
-  private readonly blocks: Block[];
+  public blocks: Block[] = [];
+  public state: State = new State({});
 
-  constructor({ state = new State({}), blocks = [] }: IBlockchainProps) {
+  constructor() {
     super();
-    this.state = state;
-    this.blocks = blocks;
+    this.read();
+  }
+
+  get props(): string[] {
+    return ['state', 'blocks'];
+  }
+
+  //noinspection JSMethodCanBeStatic
+  get defaults(): IBlockchainProps {
+    return {
+      blocks: [],
+      state: new State({}),
+    };
+  }
+
+  get prevBlock() {
+    return this.blocks[this.blocks.length - 1] || null;
+  }
+
+  update(data: string | object) {
+    const chain = super.update(data);
+
+    chain.blocks = chain.blocks.map((block: Block) => Block.fromJSON(block));
+    chain.state = State.fromJSON(chain.state);
+    return chain;
   }
 
   static verifyTransaction(prev: Transaction, state: State, tx: Transaction) {
@@ -37,7 +60,7 @@ export default class Blockchain extends AbstractModel {
   }
 
   static verifyBlock(prev: Block, state: State, block: Block) {
-    if (prev && block.parentHash !== prev .hash()) {
+    if (prev && block.parentHash !== prev.hash()) {
       throw Error('Bad parentHash.');
     }
 
@@ -65,20 +88,8 @@ export default class Blockchain extends AbstractModel {
   }
 
   push(block: Block) {
-    const prev = this.blocks[this.blocks.length - 1] || null;
-
-    this.state = Blockchain.verifyBlock(prev, this.state, block);
+    this.state = Blockchain.verifyBlock(this.prevBlock, this.state, block);
     this.blocks.push(block);
-  }
-
-  mine(minerAddress: string, transactions: Transaction[] = []) {
-    const prev = this.blocks[this.blocks.length - 1] || null;
-
-    this.push(new Block({
-      parentHash:   prev && prev.hash(),
-      stateHash:    this.state.hash(),
-      transactions,
-      minerAddress,
-    }).mine());
+    this.write();
   }
 }

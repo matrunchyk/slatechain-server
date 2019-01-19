@@ -4,16 +4,15 @@ import Transaction from './server/lib/Transaction';
 import State from './server/lib/State';
 import Block from './server/lib/Block';
 import Blockchain from './server/lib/Blockchain';
+import Wallet from './server/lib/Wallet';
+import Peer from './server/lib/Peer';
+import Node from './server/lib/Node';
+import User from './server/lib/User';
 
 export type JWTPayload = {
-  id: string,
-  iat: number,
   exp: number,
-};
-
-export type LoginCredentials = {
-  email: string,
-  password: string,
+  iat: number,
+  id: string,
 };
 
 export interface ResolverContext extends IncomingMessage {
@@ -30,9 +29,9 @@ export interface IExceptionBag {
 }
 
 export interface IGraphQLError extends GraphQLError {
+  originalError: IGraphQLError;
   state: IExceptionBag;
   status: number;
-  originalError: IGraphQLError;
 }
 
 export interface IIncomingMessage extends IncomingMessage {
@@ -40,24 +39,33 @@ export interface IIncomingMessage extends IncomingMessage {
 }
 
 export interface IWalletProps {
-  publicKey: string;
   privateKey: string;
+  publicKey: string;
 }
 
 export interface ITransactionProps {
-  to: string;
-  from: string;
   amount: number;
-  nonce: number;
-  signature: string;
+  from: string;
+  nonce?: number;
+  signature?: string;
+  to: string;
 }
 
-export interface IBlockProps {
-  parentHash: string;
-  stateHash: string;
+export interface IMineBlockArgs {
   minerAddress: string;
   transactions: Transaction[];
+}
+
+export interface ISendAmountArgs {
+  from: string;
+  to: string;
+  amount: number;
+}
+
+export interface IBlockProps extends IMineBlockArgs {
   nonce?: number;
+  parentHash: string;
+  stateHash: string;
 }
 
 export interface IWalletData {
@@ -74,11 +82,27 @@ export interface IStateProps {
 }
 
 export interface IBlockchainProps {
-  state?: State;
   blocks?: Block[];
+  state?: State;
+}
+
+export interface IPeerProps {
+  url: string;
 }
 
 export interface INodeProps {
-  name: string;
   blockchain: Blockchain;
+  peers: Peer[];
+}
+
+export interface IUserData {
+  address: string;
+  name: string;
+  wallet: Wallet;
+}
+
+export interface IServerContext extends IncomingMessage {
+  blockchain: Blockchain;
+  user: User;
+  node: Node;
 }

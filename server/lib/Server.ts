@@ -8,12 +8,13 @@ import errorHandler from 'errorhandler';
 import schema from '../gql/rootSchema';
 import User from './User';
 import Node from './Node';
+import Blockchain from './Blockchain';
 import { IGraphQLError } from '../../index';
 
 export default class Server {
   private app: Express;
 
-  constructor(node: Node, user: User) {
+  constructor(node: Node, user: User, blockchain: Blockchain) {
     // Create Express server
     this.app = express();
 
@@ -25,11 +26,19 @@ export default class Server {
     this.app.use(lusca.xframe('SAMEORIGIN'));
     this.app.use(lusca.xssProtection(true));
 
+    const extensions = (info: any) => {
+      return {
+        runTime: Date.now() - info.context.startTime
+      };
+    };
+
     this.app.use('/graphql', graphqlHTTP(() => ({
       schema,
       context: {
         node,
         user,
+        blockchain,
+        startTime: Date.now(),
       },
       graphiql: process.env.NODE_ENV === 'DEVELOPMENT',
       formatError: (error: IGraphQLError) => ({
@@ -39,6 +48,7 @@ export default class Server {
         locations: error.locations,
         path: error.path,
       }),
+      extensions,
     })));
 
     this.app.use(errorHandler());

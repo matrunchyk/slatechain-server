@@ -1,28 +1,34 @@
 import Db from '../util/db';
+import pick from 'lodash.pick';
 
-export default class AbstractModel {
+export default abstract class AbstractModel {
   private db: Db;
 
-  constructor() {
+  protected constructor() {
     this.db = new Db(this);
   }
 
-  toObject() {
-    return Object.assign(this);
+  abstract get props(): string[];
+
+  toObject(props: string[] = []): object {
+    return pick(this, (props && props.length ? props : this.props) || []);
   }
 
   toString(props: string[] = []) {
-    return JSON.stringify(this, props);
+    return JSON.stringify(this.toObject((props && props.length ? props : this.props) || []));
   }
 
-  static fromJson(data: string) {
+  update(data: string | object) {
+    return Object.assign(this, typeof data === 'string' ? JSON.parse(data) : data);
   }
 
-  save() {
-    this.db.write(this.toObject());
+  write(props: string[] = []) {
+    const dataToWrite = this.toString();
+
+    this.db.write(dataToWrite);
   }
 
   read() {
-    return this.db.read(this.toObject());
+    return this.db.read(this);
   }
 }

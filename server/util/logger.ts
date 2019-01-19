@@ -1,6 +1,4 @@
-import winston from 'winston';
-import { Logger } from 'winston';
-import './config';
+import winston, { Logger } from 'winston';
 
 const logger = new (Logger)({
     transports: [

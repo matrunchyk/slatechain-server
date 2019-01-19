@@ -1,33 +1,38 @@
-import { IBlockProps } from '../../index';
 import { createHash } from 'crypto';
 import Transaction from './Transaction';
 import AbstractModel from './AbstractModel';
-
-const BLOCK_DIFFICULTY = 4;
+import { IBlockProps } from '../../index';
+import logger from '../util/logger';
+import Config from './Config';
 
 export default class Block extends AbstractModel {
-  public minerAddress: string;
-  public parentHash: string;
-  public stateHash: string;
-  public transactions: Transaction[];
+  public minerAddress: string = null;
+  public parentHash: string = null;
+  public stateHash: string = null;
+  public transactions: Transaction[] = [];
 
-  private nonce: number;
+  private nonce: number = 0;
 
-  constructor(
-    {
-      parentHash = null,
-      stateHash = null,
-      minerAddress = null,
-      nonce = 0,
-      transactions = []
-  }: IBlockProps) {
+  constructor(props?: IBlockProps) {
     super();
 
-    this.parentHash = parentHash;
-    this.stateHash = stateHash;
-    this.minerAddress = minerAddress;
-    this.nonce = nonce;
-    this.transactions = transactions;
+    if (props) {
+      Object.assign(this, props);
+    }
+  }
+
+  get props() {
+    return ['parentHash', 'stateHash', 'minerAddress', 'nonce'];
+  }
+
+  static fromJSON(data: any) {
+    const block = new Block();
+
+    Object.assign(block, data);
+    block.transactions = block.transactions
+      .map((transaction: Transaction) => Transaction.fromJSON(transaction));
+
+    return block;
   }
 
   hash() {
@@ -35,15 +40,17 @@ export default class Block extends AbstractModel {
 
     return createHash('SHA256')
       .update(
-        `${this.toString(['parentHash', 'stateHash', 'minerAddress', 'nonce'])}${transactions}`
+        `${this.toString()}${transactions}`
       )
       .digest('hex');
   }
 
   mine(min = 0, max = Number.MAX_SAFE_INTEGER) {
+    logger.debug('Mining new block...');
+
     for (let nonce = min; nonce <= max; nonce++) {
       const block = new Block({
-        ...this.toObject(),
+        ...this.toObject() as IBlockProps,
         nonce,
       });
 
@@ -54,7 +61,7 @@ export default class Block extends AbstractModel {
   }
 
   verify() {
-    const mask = '0'.repeat(BLOCK_DIFFICULTY);
+    const mask = '0'.repeat(Config.BLOCK_DIFFICULTY);
 
     return this.hash().startsWith(mask);
   }

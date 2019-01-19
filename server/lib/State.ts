@@ -3,16 +3,33 @@ import Transaction from './Transaction';
 import AbstractModel from './AbstractModel';
 import Block from './Block';
 import { IStateProps, IStateWallet } from '../../index';
-
-const BLOCK_REWARD = 10;
+import Config from './Config';
 
 export default class State extends AbstractModel {
   public readonly wallets: IStateWallet = {};
 
-  constructor({ wallets }: IStateProps | null) {
+  constructor(opts?: IStateProps) {
     super();
 
-    this.wallets = wallets || {};
+    if (opts) {
+      Object.assign(this, opts);
+    }
+  }
+
+  get props(): string[] {
+    return ['wallets'];
+  }
+
+  static fromJSON(data: any) {
+    const state = Object.assign(new State(), data);
+
+    Object.keys(state.wallets).forEach((key: string) => {
+      Object.assign(state.wallets, {
+        [key]: state.wallets[key],
+      });
+    });
+
+    return state;
   }
 
   hash() {
@@ -35,10 +52,10 @@ export default class State extends AbstractModel {
           [mt.to]: {amount: target.amount + mt.amount, nonce: target.nonce},
         }});
     } else {
-      const miner = this.wallets[mt.minerAddress] || {amount: 0, nonce: 0};
+      const miner = this.wallets[mt.minerAddress] || { amount: 0, nonce: 0 };
 
       return new State({ ...this.toObject(), wallets: { ...this.wallets,
-          [mt.minerAddress]: {...miner, amount: miner.amount + BLOCK_REWARD},
+          [mt.minerAddress]: {...miner, amount: miner.amount + Config.BLOCK_REWARD},
         }});
     }
   }

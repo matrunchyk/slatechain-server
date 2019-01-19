@@ -2,12 +2,17 @@ import { createECDH } from 'crypto';
 import { IWalletProps } from '../../index';
 
 export default class Wallet {
-  private publicKey: string;
-  private privateKey: string;
+  public publicKey: string = '';
+  public privateKey: string = '';
 
-  constructor({ publicKey, privateKey }: IWalletProps) {
-    this.publicKey = publicKey;
-    this.privateKey = privateKey;
+  constructor(opts?: IWalletProps) {
+    if (opts) {
+      Object.assign(this, opts);
+    }
+  }
+
+  static fromJSON(data: any) {
+    return Object.assign(new Wallet(), data);
   }
 
   static create() {

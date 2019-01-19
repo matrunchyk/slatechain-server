@@ -11,14 +11,20 @@ export default class Transaction extends AbstractModel {
   public nonce: number;
   public signature: string;
 
-  constructor({ from, to, amount, nonce, signature }: ITransactionProps) {
+  constructor(opts?: ITransactionProps) {
     super();
 
-    this.from = from;
-    this.to = to;
-    this.amount = amount;
-    this.nonce = nonce;
-    this.signature = signature;
+    if (opts) {
+      Object.assign(this, opts);
+    }
+  }
+
+  get props(): string[] {
+    return ['from', 'to', 'amount', 'nonce', 'signature'];
+  }
+
+  static fromJSON(data: any) {
+    return Object.assign(new Transaction(), data);
   }
 
   hash() {

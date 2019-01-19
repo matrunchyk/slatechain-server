@@ -1,36 +1,27 @@
 import { IResolverObject } from 'graphql-tools';
+import UserController from '../../controllers/UserController';
 
 export const typeDef = `
-  type UserProfile {
-    name: String
-    location: String
-    website: String
-    picture: String
+  type Wallet {
+    publicKey: String!
+    privateKey: String!
   }
 
   type User {
-    _id: ID!
-    gravatar: String
-    email: String!
-    profile: UserProfile!
-    createdAt: String
-    updatedAt: String
+    name: String!
+    address: String!
+    wallet: Wallet
   }
 
-  type LoginData {
-    auth: Boolean!
-    msg: String
-    accessToken: String
-    user: User
-  }
-
-  extend type Mutation {
-    login(email: String!, password: String!): LoginData
+  extend type Query {
+    fetchUser: User!
+    fetchBalance: Int!
   }
 `;
 
 export const resolvers: IResolverObject = {
-  Mutation: {
-     login: () => {},
+  Query: {
+    fetchUser: UserController.fetchUser,
+    fetchBalance: UserController.fetchBalance,
   },
 };

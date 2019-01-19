@@ -1,33 +1,45 @@
 import AbstractModel from '../lib/AbstractModel';
 import Config from '../lib/Config';
+import logger from './logger';
 
 const fs = require('fs-extra');
 const path = require('path');
 
 export default class Db {
-    private readonly prototype: AbstractModel;
-    private readonly filePath: string;
+  private readonly prototype: AbstractModel;
+  private readonly filePath: string;
 
-    constructor(prototype: AbstractModel) {
-        this.prototype = prototype;
-        this.filePath = `data/${Config.NODE_NAME}/${prototype.constructor.name}.json`;
+  constructor(prototype: AbstractModel) {
+    this.prototype = prototype;
+    this.filePath = `data/${Config.NODE_NAME}/${prototype.constructor.name.toLowerCase()}.json`;
+  }
+
+  read(prototype: any): any {
+    logger.debug(`Loading data from ${this.filePath}...`);
+    if (!fs.existsSync(this.filePath)) {
+      logger.debug(`...no file exists, fallback to defaults`);
+      return prototype.update(prototype.defaults);
     }
 
-    read(prototype: any): any {
-        if (!fs.existsSync(this.filePath)) {
-            return null;
-        }
-
-        const fileContent: string = fs.readFileSync(this.filePath);
-        if (fileContent.length === 0) {
-            return null;
-        }
-
-        return prototype.hydrate(JSON.parse(fileContent));
+    const fileContent: Buffer = fs.readFileSync(this.filePath);
+    if (fileContent.length === 0) {
+      logger.debug(`...file is empty, fallback to defaults`);
+      return prototype.update(prototype.defaults);
     }
 
-    write(data: any) {
-        fs.ensureDirSync(path.dirname(this.filePath));
-        fs.writeFileSync(this.filePath, JSON.stringify(data));
-    }
+    logger.debug(`...done, updating a caller`);
+    return prototype.update(fileContent.toString('utf8'));
+  }
+
+  write(data: string) {
+    fs.ensureDirSync(path.dirname(this.filePath));
+    logger.debug(`Writing data to ${this.filePath}:`);
+    fs.writeFileSync(this.filePath, data);
+    logger.debug(`...done`);
+  }
+
+  // Exclude DB from any serialization
+  toJSON(): undefined {
+    return undefined;
+  }
 }
