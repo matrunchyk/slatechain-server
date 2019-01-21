@@ -1,43 +1,29 @@
 import AbstractModel from './AbstractModel';
-import { IBlockchainProps } from '../../index';
 import State from './State';
 import Block from './Block';
 import Transaction from './Transaction';
+import { IBlockchainProps } from '../../index';
+import { getGenesisBlock } from '../util/utils';
 
 export default class Blockchain extends AbstractModel {
   public blocks: Block[] = [];
   public state: State = new State({});
 
-  constructor() {
+  // Public
+  public constructor() {
     super();
     this.read();
+
+    if (this.blocks.length === 1) {
+      this.write();
+    }
   }
 
-  get props(): string[] {
-    return ['state', 'blocks'];
+  public get prevBlock() {
+    return this.blocks[this.blocks.length - 1] || undefined;
   }
 
-  //noinspection JSMethodCanBeStatic
-  get defaults(): IBlockchainProps {
-    return {
-      blocks: [],
-      state: new State({}),
-    };
-  }
-
-  get prevBlock() {
-    return this.blocks[this.blocks.length - 1] || null;
-  }
-
-  update(data: string | object) {
-    const chain = super.update(data);
-
-    chain.blocks = chain.blocks.map((block: Block) => Block.fromJSON(block));
-    chain.state = State.fromJSON(chain.state);
-    return chain;
-  }
-
-  static verifyTransaction(prev: Transaction, state: State, tx: Transaction) {
+  public static verifyTransaction(prev: Transaction, state: State, tx: Transaction) {
     const sender = state.wallets[tx.from] || { amount: 0 };
 
     if (tx.amount <= 0 || sender.amount < tx.amount) {
@@ -59,7 +45,7 @@ export default class Blockchain extends AbstractModel {
     return state.with(tx);
   }
 
-  static verifyBlock(prev: Block, state: State, block: Block) {
+  public static verifyBlock(prev: Block, state: State, block: Block) {
     if (prev && block.parentHash !== prev.hash()) {
       throw Error('Bad parentHash.');
     }
@@ -79,7 +65,7 @@ export default class Blockchain extends AbstractModel {
     }, state.with(block));
   }
 
-  balance(address: string) {
+  public balance(address: string) {
     if (!this.state.wallets[address]) {
       return 0;
     }
@@ -87,9 +73,35 @@ export default class Blockchain extends AbstractModel {
     return this.state.wallets[address].amount;
   }
 
-  push(block: Block) {
+  public push(block: Block) {
     this.state = Blockchain.verifyBlock(this.prevBlock, this.state, block);
     this.blocks.push(block);
     this.write();
+  }
+
+  public replace(blocks: Block[]) {
+    console.log('Replacing the blockchain...');
+    this.blocks = blocks;
+  }
+
+  // Protected
+  protected get props(): string[] {
+    return ['state', 'blocks'];
+  }
+
+  //noinspection JSMethodCanBeStatic
+  protected get defaults(): IBlockchainProps {
+    return {
+      blocks: [getGenesisBlock()],
+      state: new State({}),
+    };
+  }
+
+  protected update(data: string | object) {
+    const chain = super.update(data);
+
+    chain.blocks = chain.blocks.map((block: Block) => Block.fromJSON(block));
+    chain.state = State.fromJSON(chain.state);
+    return chain;
   }
 }

@@ -57,11 +57,10 @@ export default class Server {
   boot(host: string, port: number) {
     this.app.listen(port, host, () => {
       console.log(
-        '  App is running at http://%s:%d',
+        '  HTTP Server is running at http://%s:%d',
         host,
         port,
       );
-      console.log('  Press CTRL-C to stop\n');
     });
   }
 }

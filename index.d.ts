@@ -1,13 +1,15 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { GraphQLError } from 'graphql';
+import WebSocket from 'ws';
 import Transaction from './server/lib/Transaction';
 import State from './server/lib/State';
 import Block from './server/lib/Block';
 import Blockchain from './server/lib/Blockchain';
 import Wallet from './server/lib/Wallet';
-import Peer from './server/lib/Peer';
 import Node from './server/lib/Node';
 import User from './server/lib/User';
+import { MessageType } from './server/util/constants';
+import Peer from './server/lib/Peer';
 
 export type JWTPayload = {
   exp: number,
@@ -63,6 +65,7 @@ export interface ISendAmountArgs {
 }
 
 export interface IBlockProps extends IMineBlockArgs {
+  index: number;
   nonce?: number;
   parentHash: string;
   stateHash: string;
@@ -87,7 +90,11 @@ export interface IBlockchainProps {
 }
 
 export interface IPeerProps {
-  url: string;
+  node?: Node;
+  reconnectCount?: number;
+  url?: string;
+  ws?: WebSocket;
+  own?: boolean;
 }
 
 export interface INodeProps {
@@ -105,4 +112,18 @@ export interface IServerContext extends IncomingMessage {
   blockchain: Blockchain;
   user: User;
   node: Node;
+}
+
+export interface ISocketControlMessage extends Object {
+  type: MessageType;
+}
+
+export interface ISocketControlMessage extends Object {
+  type: MessageType;
+  peers: IPeerProps[];
+}
+
+export interface ISocketControlMessage extends Object {
+  type: MessageType;
+  blocks: IBlockProps[];
 }

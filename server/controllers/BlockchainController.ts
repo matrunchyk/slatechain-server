@@ -5,9 +5,10 @@ import Transaction from '../lib/Transaction';
 
 export default class BlockchainController {
 
-  static mineBlock(_: any, { minerAddress, transactions = [] }: IMineBlockArgs, { blockchain }: IServerContext) {
+  static mineBlock(_: any, { minerAddress, transactions = [] }: IMineBlockArgs, { blockchain, node }: IServerContext) {
     const prev = blockchain.blocks[blockchain.blocks.length - 1] || null;
     const minedBlock = new Block({
+      index: blockchain.prevBlock.index + 1,
       parentHash:   prev && prev.hash(),
       stateHash:    blockchain.state.hash(),
       transactions,
@@ -16,6 +17,7 @@ export default class BlockchainController {
 
     logger.debug('Mining completed!');
     blockchain.push(minedBlock);
+    node.broadcastLatestBlock();
 
     return minedBlock;
   }

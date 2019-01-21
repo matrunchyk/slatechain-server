@@ -6,6 +6,7 @@ import logger from '../util/logger';
 import Config from './Config';
 
 export default class Block extends AbstractModel {
+  public index: number = 0;
   public minerAddress: string = null;
   public parentHash: string = null;
   public stateHash: string = null;
@@ -13,7 +14,13 @@ export default class Block extends AbstractModel {
 
   private nonce: number = 0;
 
-  constructor(props?: IBlockProps) {
+  // Protected
+  protected get props() {
+    return ['parentHash', 'stateHash', 'minerAddress', 'nonce', 'index'];
+  }
+
+  // Public
+  public constructor(props?: IBlockProps) {
     super();
 
     if (props) {
@@ -21,11 +28,7 @@ export default class Block extends AbstractModel {
     }
   }
 
-  get props() {
-    return ['parentHash', 'stateHash', 'minerAddress', 'nonce'];
-  }
-
-  static fromJSON(data: any) {
+  public static fromJSON(data: any) {
     const block = new Block();
 
     Object.assign(block, data);
@@ -35,7 +38,7 @@ export default class Block extends AbstractModel {
     return block;
   }
 
-  hash() {
+  public hash() {
     const transactions = JSON.stringify(this.transactions.map(tx => tx.hash()));
 
     return createHash('SHA256')
@@ -45,12 +48,15 @@ export default class Block extends AbstractModel {
       .digest('hex');
   }
 
-  mine(min = 0, max = Number.MAX_SAFE_INTEGER) {
-    logger.debug('Mining new block...');
+  public mine(min = 0, max = Number.MAX_SAFE_INTEGER) {
+    logger.debug('Mining block...');
+
+    const blockData = this.toObject() as IBlockProps;
+    blockData.index += 1;
 
     for (let nonce = min; nonce <= max; nonce++) {
       const block = new Block({
-        ...this.toObject() as IBlockProps,
+        ...blockData,
         nonce,
       });
 
@@ -60,7 +66,7 @@ export default class Block extends AbstractModel {
     }
   }
 
-  verify() {
+  public verify() {
     const mask = '0'.repeat(Config.BLOCK_DIFFICULTY);
 
     return this.hash().startsWith(mask);
