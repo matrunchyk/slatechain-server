@@ -1,7 +1,7 @@
 import { createHash, createSign, createVerify } from 'crypto';
 import { privateKeyToPem, publicKeyToPem } from '../util/utils';
 import AbstractModel from './AbstractModel';
-import { ITransactionProps } from '../../index';
+import { ITransactionProps } from '../..';
 
 export default class Transaction extends AbstractModel {
   public date: Date;

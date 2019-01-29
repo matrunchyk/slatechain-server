@@ -1,5 +1,5 @@
 import { createECDH } from 'crypto';
-import { IWalletProps } from '../../index';
+import { IWalletProps } from '../..';
 
 export default class Wallet {
   public publicKey: string = '';

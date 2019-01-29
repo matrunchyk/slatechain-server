@@ -1,11 +1,12 @@
 import WebSocket from 'ws';
+import { compress } from 'lzutf8';
 import chalk from 'chalk';
 import Node from './Node';
 import { MessageType } from '../util/constants';
 import Config from './Config';
 import logger from '../util/logger';
 import Block from './Block';
-import { IPeerProps } from '../../index';
+import { IPeerProps } from '../..';
 
 export default class Peer {
   public node: Node;
@@ -42,7 +43,6 @@ export default class Peer {
   }
 
   public askForLatestBlock() {
-    // @ts-ignore
     logger.debug(`⬆️  Asking for the latest block... ${this.clientAddress}`);
 
     this.sendMessage({
@@ -122,6 +122,10 @@ export default class Peer {
       return;
     }
 
-    this.ws.send(JSON.stringify(message));
+    this.ws.send(this.packMessage(message));
+  }
+
+  private packMessage(message: any) {
+    return compress(JSON.stringify(message));
   }
 }

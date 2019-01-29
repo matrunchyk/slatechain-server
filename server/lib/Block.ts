@@ -1,7 +1,7 @@
 import { createHash } from 'crypto';
 import Transaction from './Transaction';
 import AbstractModel from './AbstractModel';
-import { IBlockProps } from '../../index';
+import { IBlockProps } from '../..';
 import logger from '../util/logger';
 import Config from './Config';
 
@@ -52,11 +52,13 @@ export default class Block extends AbstractModel {
     logger.debug('Mining block...');
 
     const blockData = this.toObject() as IBlockProps;
-    blockData.index += 1;
+    const { transactions } = this;
 
+    // PoW algo
     for (let nonce = min; nonce <= max; nonce++) {
       const block = new Block({
         ...blockData,
+        transactions,
         nonce,
       });
 

@@ -2,8 +2,9 @@ import AbstractModel from './AbstractModel';
 import State from './State';
 import Block from './Block';
 import Transaction from './Transaction';
-import { IBlockchainProps } from '../../index';
 import { getGenesisBlock } from '../util/utils';
+import logger from '../util/logger';
+import { IBlockchainProps } from '../..';
 
 export default class Blockchain extends AbstractModel {
   public blocks: Block[] = [];
@@ -27,7 +28,7 @@ export default class Blockchain extends AbstractModel {
     const sender = state.wallets[tx.from] || { amount: 0 };
 
     if (tx.amount <= 0 || sender.amount < tx.amount) {
-      throw Error('Bad amount.');
+      throw Error('Bad amount, insufficient funds.');
     }
 
     if (tx.nonce <  0 || sender.nonce > tx.nonce) {
@@ -47,11 +48,11 @@ export default class Blockchain extends AbstractModel {
 
   public static verifyBlock(prev: Block, state: State, block: Block) {
     if (prev && block.parentHash !== prev.hash()) {
-      throw Error('Bad parentHash.');
+      throw Error('Bad parent hash.');
     }
 
     if (prev && block.stateHash  !== state.hash()) {
-      throw Error('Bad stateHash.' );
+      throw Error('Bad state hash.' );
     }
 
     if (!block.verify()) {
@@ -74,9 +75,13 @@ export default class Blockchain extends AbstractModel {
   }
 
   public push(block: Block) {
-    this.state = Blockchain.verifyBlock(this.prevBlock, this.state, block);
-    this.blocks.push(block);
-    this.write();
+    try {
+      this.state = Blockchain.verifyBlock(this.prevBlock, this.state, block);
+      this.blocks.push(block);
+      this.write();
+    } catch (e) {
+      logger.debug(`Block push failed: ${e.message}`);
+    }
   }
 
   public replace(blocks: Block[]) {

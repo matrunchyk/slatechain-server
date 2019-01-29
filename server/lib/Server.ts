@@ -9,7 +9,7 @@ import schema from '../gql/rootSchema';
 import User from './User';
 import Node from './Node';
 import Blockchain from './Blockchain';
-import { IGraphQLError } from '../../index';
+import { IGraphQLError } from '../..';
 
 export default class Server {
   private app: Express;

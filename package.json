@@ -40,15 +40,16 @@
     "graphql-tools": "^4.0.3",
     "jsonwebtoken": "^8.4.0",
     "lodash.merge": "^4.6.1",
+    "lodash.pick": "^4.4.0",
     "lusca": "^1.6.1",
+    "lzutf8": "^0.5.5",
     "moment": "^2.23.0",
     "pascal-case": "^2.0.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "require-all": "^3.0.0",
     "validator": "^10.10.0",
-    "winston": "^2.4.4",
-    "lodash.pick": "^4.4.0"
+    "winston": "^2.4.4"
   },
   "devDependencies": {
     "@types/async": "^2.0.50",

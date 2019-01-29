@@ -1,12 +1,13 @@
 import WebSocket from 'ws';
+import { decompress } from 'lzutf8';
 import AbstractModel from './AbstractModel';
 import Blockchain from './Blockchain';
 import Peer from './Peer';
 import Config from './Config';
-import { IBlockProps, INodeProps, IPeerProps, ISocketControlMessage } from '../../index';
 import logger from '../util/logger';
 import { MessageType } from '../util/constants';
 import Block from './Block';
+import { IBlockProps, INodeProps, IPeerProps, ISocketControlMessage } from '../..';
 
 export default class Node extends AbstractModel {
   public peers: Peer[];
@@ -53,8 +54,7 @@ export default class Node extends AbstractModel {
   }
 
   // Interconnection routing
-  public onMessage(json: string = '{type: ""}', peer: Peer) {
-    const message: ISocketControlMessage = JSON.parse(json);
+  public onMessage(message: ISocketControlMessage, peer: Peer) {
 
     switch (message.type) {
       case MessageType.QUERY_LATEST_BLOCK:
@@ -93,7 +93,7 @@ export default class Node extends AbstractModel {
             console.log('We have to query the chain from our peer');
             peer.askForAllBlocks();
           } else {
-            console.log('Received blockchain is longer than current blockchain');
+            console.log('Received blockchain is longer than current blockchain, replacing blockchain entirely.');
             this.blockchain.replace(receivedBlocks);
             this.blockchain.write();
           }
@@ -153,6 +153,10 @@ export default class Node extends AbstractModel {
     );
   }
 
+  private unpackMessage(message: any): ISocketControlMessage {
+    return JSON.parse(decompress(message) || '{type: ""}');
+  }
+
   private onIncomingConnection(ws: WebSocket) {
     // Build Peer interface
     const myPeer = new Peer({ ws, node: this });
@@ -161,7 +165,7 @@ export default class Node extends AbstractModel {
     myPeer.sendPeers();
 
     // Set up handlers with connecting peer
-    ws.on('message', (data: string) => this.onMessage(data, myPeer));
+    ws.on('message', (data: string) => this.onMessage(this.unpackMessage(data), myPeer));
     ws.on('close', function(code: number, reason: string) {
       console.log('-----CLOSE-----');
       console.log(`Connection to ${this.url} closed. Reason: ${reason}. Code: ${code}`);

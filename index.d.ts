@@ -69,6 +69,7 @@ export interface IBlockProps extends IMineBlockArgs {
   nonce?: number;
   parentHash: string;
   stateHash: string;
+  trasactions?: Transaction[];
 }
 
 export interface IWalletData {
@@ -99,7 +100,7 @@ export interface IPeerProps {
 
 export interface INodeProps {
   blockchain: Blockchain;
-  peers: Peer[];
+  peers?: Peer[];
 }
 
 export interface IUserData {
@@ -126,4 +127,9 @@ export interface ISocketControlMessage extends Object {
 export interface ISocketControlMessage extends Object {
   type: MessageType;
   blocks: IBlockProps[];
+}
+
+export interface ISocketControlMessage extends Object {
+  type: MessageType;
+  state: IStateProps[];
 }

@@ -1,4 +1,4 @@
-import { IMineBlockArgs, ISendAmountArgs, IServerContext } from '../../index';
+import { IMineBlockArgs, ISendAmountArgs, IServerContext } from '../..';
 import Block from '../lib/Block';
 import logger from '../util/logger';
 import Transaction from '../lib/Transaction';

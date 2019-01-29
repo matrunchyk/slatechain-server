@@ -1,7 +1,7 @@
 import faker from 'faker';
 import AbstractModel from './AbstractModel';
-import { IUserData } from '../../index';
 import Wallet from './Wallet';
+import { IUserData } from '../..';
 
 export default class User extends AbstractModel {
   public readonly userData: IUserData;

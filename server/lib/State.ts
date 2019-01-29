@@ -2,8 +2,8 @@ import { createHash } from 'crypto';
 import Transaction from './Transaction';
 import AbstractModel from './AbstractModel';
 import Block from './Block';
-import { IStateProps, IStateWallet } from '../../index';
 import Config from './Config';
+import { IStateProps, IStateWallet } from '../..';
 
 export default class State extends AbstractModel {
   public readonly wallets: IStateWallet = {};
@@ -45,7 +45,7 @@ export default class State extends AbstractModel {
   with(mt: Transaction | Block) {
     if (mt instanceof Transaction) {
       const sender = this.wallets[mt.from] || {amount: 0, nonce: 0};
-      const target = this.wallets[(mt.to)] || {amount: 0, nonce: 0};
+      const target = this.wallets[mt.to] || {amount: 0, nonce: 0};
 
       return new State({ ...this.toObject(), wallets: { ...this.wallets,
           [mt.from]: {amount: sender.amount - mt.amount, nonce: sender.nonce + 1},
