@@ -23,7 +23,7 @@
     "vue-graphql-models": "^1.11.4",
     "vue-property-decorator": "^7.2.0",
     "vue-router": "^3.0.1",
-    "vuetify": "^1.4.0",
+    "vuetify": "^2.1.9",
     "vuex": "^3.0.1",
     "vuex-class": "latest",
     "vuex-persist": "latest",
