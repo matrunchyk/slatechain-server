@@ -8,7 +8,9 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "@types/graphql": "^14.0.4",
@@ -28,7 +30,8 @@
     "vuex-class": "latest",
     "vuex-persist": "latest",
     "collect.js": "latest",
-    "apollo-link-error": "latest"
+    "apollo-link-error": "latest",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "@types/chart.js": "^2.7.42",
@@ -63,5 +66,6 @@
       "vue-cli-service lint",
       "git add"
     ]
-  }
+  },
+  "snyk": true
 }
