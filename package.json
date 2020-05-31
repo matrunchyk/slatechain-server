@@ -22,7 +22,9 @@
     "copy-static-assets": "ts-node copyStaticAssets.ts",
     "debug": "npm run build && npm run watch-debug",
     "serve-debug": "nodemon --ignore data/ --inspect dist/jscoin.js",
-    "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\""
+    "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\"",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "apollo-server": "^2.3.1",
@@ -49,7 +51,8 @@
     "request-promise": "^4.2.2",
     "require-all": "^3.0.0",
     "validator": "^10.10.0",
-    "winston": "^2.4.4"
+    "winston": "^2.4.4",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "@types/async": "^2.0.50",
@@ -85,5 +88,6 @@
     "ts-node": "^5.0.1",
     "tslint": "^5.12.0",
     "typescript": "^2.9.2"
-  }
+  },
+  "snyk": true
 }
