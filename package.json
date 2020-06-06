@@ -27,7 +27,7 @@
     "prepare": "npm run snyk-protect"
   },
   "dependencies": {
-    "apollo-server": "^2.3.1",
+    "apollo-server": "^2.14.2",
     "async": "^2.6.1",
     "bcrypt": "^3.0.3",
     "body-parser": "^1.18.3",
