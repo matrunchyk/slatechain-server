@@ -450,3 +450,7 @@ patch:
         patched: '2020-05-01T08:59:11.619Z'
     - '@vue/cli-plugin-unit-jest > jest > jest-cli > jest-runner > jest-runtime > jest-config > babel-jest > babel-plugin-istanbul > istanbul-lib-instrument > babel-template > babel-traverse > babel-types > lodash':
         patched: '2020-05-01T08:59:11.619Z'
+    - '@vue/cli-service > portfinder > async > lodash':
+        patched: '2020-06-06T18:43:18.620Z'
+    - '@vue/cli-service > webpack-dev-server > portfinder > async > lodash':
+        patched: '2020-06-06T18:43:18.620Z'
