@@ -15,7 +15,7 @@
   "dependencies": {
     "@types/graphql": "^14.0.4",
     "apollo-cache-persist": "latest",
-    "chart.js": "^2.7.3",
+    "chart.js": "^2.9.4",
     "graphql": "^14.0.2",
     "jwt-decode": "latest",
     "register-service-worker": "^1.5.2",
