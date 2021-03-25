@@ -31,7 +31,7 @@
     "vuex-persist": "latest",
     "collect.js": "latest",
     "apollo-link-error": "latest",
-    "snyk": "^1.337.0"
+    "snyk": "^1.465.0"
   },
   "devDependencies": {
     "@types/chart.js": "^2.7.42",
